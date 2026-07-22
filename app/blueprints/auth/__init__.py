@@ -120,7 +120,7 @@ def register():
 
         flash('¡Registro exitoso! Ahora puedes iniciar sesión.', 'success')
         # Enviar correo de bienvenida en segundo plano
-        threading.Thread(target=email_service.enviar_bienvenida_cliente, args=(user,), daemon=True).start()
+        email_service.enviar_bienvenida_cliente(user)
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form_data={})
@@ -160,11 +160,7 @@ def forgot_password():
         if user:
             token = user.generar_reset_token(expiry_minutes=30)
             db.session.commit()
-            threading.Thread(
-                target=email_service.enviar_reseteo_contrasena,
-                args=(user, token),
-                daemon=True
-            ).start()
+            email_service.enviar_reseteo_contrasena(user, token)
 
         flash('Si ese correo está registrado, recibirás un enlace para restablecer tu contraseña.', 'info')
         return redirect(url_for('auth.login'))

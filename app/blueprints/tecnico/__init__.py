@@ -185,16 +185,8 @@ def crear_informe(solicitud_id):
         # Notificar por correo al cliente y admins en segundo plano
         rol_admin = Rol.query.filter_by(nombre_rol='admin').first()
         admins = User.query.filter_by(id_rol=rol_admin.id_rol).all() if rol_admin else []
-        threading.Thread(
-            target=email_service.enviar_solicitud_resuelta_cliente,
-            args=(solicitud,),
-            daemon=True
-        ).start()
-        threading.Thread(
-            target=email_service.enviar_solicitud_resuelta_admin,
-            args=(solicitud, admins),
-            daemon=True
-        ).start()
+        email_service.enviar_solicitud_resuelta_cliente(solicitud)
+        email_service.enviar_solicitud_resuelta_admin(solicitud, admins)
 
         flash('¡Informe enviado con éxito! La solicitud ha sido marcada como Resuelta.', 'success')
         return redirect(url_for('tecnico.dashboard'))

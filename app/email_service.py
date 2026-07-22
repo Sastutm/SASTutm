@@ -3,6 +3,8 @@ Servicio centralizado de correos electrónicos para SAST.
 Todas las notificaciones del sistema pasan por aquí.
 """
 from flask_mail import Message
+from flask import current_app
+import threading
 from app.extensions import mail
 
 
@@ -77,14 +79,22 @@ def _base_html(title: str, body_html: str, cta_text: str = None, cta_url: str = 
 </html>'''
 
 
+def _send_async_email(app, msg):
+    with app.app_context():
+        try:
+            mail.send(msg)
+        except Exception as e:
+            print(f'[EMAIL ERROR] {e}')
+
 def _send(subject: str, recipients: list, html: str) -> bool:
     """Envía el correo de forma segura. Nunca falla el flujo principal."""
     try:
         msg = Message(subject=f'[SAST] {subject}', recipients=recipients, html=html)
-        mail.send(msg)
+        app = current_app._get_current_object()
+        threading.Thread(target=_send_async_email, args=(app, msg), daemon=True).start()
         return True
     except Exception as e:
-        print(f'[EMAIL ERROR] {e}')
+        print(f'[EMAIL QUEUE ERROR] {e}')
         return False
 
 

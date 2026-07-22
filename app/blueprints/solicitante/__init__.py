@@ -91,11 +91,7 @@ def nueva_solicitud():
         # Notificar a todos los admins en segundo plano
         rol_admin = Rol.query.filter_by(nombre_rol='admin').first()
         admins = User.query.filter_by(id_rol=rol_admin.id_rol).all() if rol_admin else []
-        threading.Thread(
-            target=email_service.enviar_nueva_solicitud_admin,
-            args=(solicitud, admins),
-            daemon=True
-        ).start()
+        email_service.enviar_nueva_solicitud_admin(solicitud, admins)
 
         return redirect(url_for('solicitante.dashboard'))
 

@@ -146,16 +146,8 @@ def asignar_tecnico(solicitud_id):
         db.session.commit()
 
         # Notificar al cliente y al técnico en segundo plano
-        threading.Thread(
-            target=email_service.enviar_tecnico_asignado_cliente,
-            args=(solicitud,),
-            daemon=True
-        ).start()
-        threading.Thread(
-            target=email_service.enviar_solicitud_asignada_tecnico,
-            args=(solicitud,),
-            daemon=True
-        ).start()
+        email_service.enviar_tecnico_asignado_cliente(solicitud)
+        email_service.enviar_solicitud_asignada_tecnico(solicitud)
 
         flash(f'Técnico {tecnico.nombre_completo} asignado con éxito. Estado → En proceso.', 'success')
         return redirect(url_for('admin.solicitudes'))
@@ -309,11 +301,7 @@ def crear_tecnico():
         db.session.commit()
 
         # Enviar correo de bienvenida al técnico con su contraseña
-        threading.Thread(
-            target=email_service.enviar_bienvenida_tecnico,
-            args=(user, password),
-            daemon=True
-        ).start()
+        email_service.enviar_bienvenida_tecnico(user, password)
 
         flash(f'Técnico {user.nombre_completo} creado con éxito.', 'success')
         return redirect(url_for('admin.usuarios'))
