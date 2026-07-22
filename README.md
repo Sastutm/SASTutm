@@ -31,7 +31,7 @@ Al ejecutar el comando de inicialización de base de datos en la nube (`flask in
 ### Comando de Arranque (Render Start Command)
 En la configuración del Web Service en Render, asegúrate de utilizar el siguiente comando de inicio para garantizar el correcto funcionamiento del chat en tiempo real:
 ```bash
-gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 app:create_app()
+gunicorn -w 1 --threads 100 "app:create_app()"
 ```
 
 ---
