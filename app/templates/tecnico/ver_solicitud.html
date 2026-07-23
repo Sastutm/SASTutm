@@ -7,7 +7,7 @@
 
 {% set estado_css = {
     'Pendiente':  'status-pendiente',
-    'En Proceso': 'status-en-proceso',
+    'En proceso': 'status-en-proceso',
     'Resuelto':   'status-resuelto',
     'Cancelado':  'status-cancelado'
 } %}
@@ -25,7 +25,7 @@
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <h1 style="font-size:1.5rem;margin:0;">
                         Solicitud <span class="text-gradient">#{{ solicitud.id_solicitud }}</span>
-                        &mdash; {{ solicitud.tipo_soporte }}
+                        &mdash; {{ solicitud.tipo_soporte.nombre_soporte }}
                     </h1>
                     <span class="badge-status {{ estado_css.get(solicitud.estado.nombre_estado, 'status-pendiente') }}">
                         {{ solicitud.estado.nombre_estado }}
@@ -72,7 +72,7 @@
                     <div class="detail-row">
                         <div class="detail-label"><i class="bi bi-tag-fill"></i> Tipo de soporte</div>
                         <div class="detail-value">
-                            <span class="badge-type">{{ solicitud.tipo_soporte }}</span>
+                            <span class="badge-type">{{ solicitud.tipo_soporte.nombre_soporte }}</span>
                         </div>
                     </div>
 
@@ -144,10 +144,10 @@
                     <div class="detail-row">
                         <div class="detail-label"><i class="bi bi-telephone"></i> Teléfono</div>
                         <div class="detail-value">
-                            {% if solicitud.cliente.telefono %}
-                                <a href="tel:{{ solicitud.cliente.telefono }}"
+                            {% if solicitud.cliente.numero_telefono %}
+                                <a href="tel:{{ solicitud.cliente.numero_telefono }}"
                                    style="color:var(--secondary);text-decoration:none;">
-                                    {{ solicitud.cliente.telefono }}
+                                    {{ solicitud.cliente.numero_telefono }}
                                 </a>
                             {% else %}
                                 <span style="color:var(--text-muted);">No registrado</span>
@@ -213,7 +213,7 @@
                 <div class="chat-messages" id="chatMessages">
                     {% if mensajes %}
                         {% for msg in mensajes %}
-                        {% set is_mine = msg.id_remitente == current_user.id_user %}
+                        {% set is_mine = msg.id_usuario_remitente == current_user.id_user %}
                         <div class="d-flex flex-column {{ 'align-items-end' if is_mine else 'align-items-start' }}">
                             {% if not is_mine %}
                             <span class="msg-meta mb-1">

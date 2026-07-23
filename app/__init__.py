@@ -77,18 +77,46 @@ def create_app(config_class=Config):
         # Contexto para templates
         @app.context_processor
         def inject_globals():
-            from app.models import Solicitud, EstadoSolicitud
+            from app.models import Solicitud, EstadoSolicitud, Mensaje
             notificaciones = []
-            if current_user.is_authenticated and current_user.es_solicitante:
-                estado_resuelto = EstadoSolicitud.query.filter_by(nombre_estado='Resuelto').first()
-                if estado_resuelto:
-                    notificaciones = Solicitud.query.filter_by(
-                        id_cliente=current_user.id_user,
-                        id_estado=estado_resuelto.id_estado
-                    ).filter(
-                        ~Solicitud.calificacion.has()
-                    ).all()
-            return dict(notificaciones_pendientes=notificaciones)
+            notificaciones_tecnico = []
+            if current_user.is_authenticated:
+                if current_user.es_solicitante:
+                    estado_resuelto = EstadoSolicitud.query.filter_by(nombre_estado='Resuelto').first()
+                    if estado_resuelto:
+                        notificaciones = Solicitud.query.filter_by(
+                            id_cliente=current_user.id_user,
+                            id_estado=estado_resuelto.id_estado
+                        ).filter(
+                            ~Solicitud.calificacion.has()
+                        ).all()
+                elif current_user.es_tecnico:
+                    estado_en_proceso = EstadoSolicitud.query.filter_by(nombre_estado='En proceso').first()
+                    solicitudes_tecnico = Solicitud.query.filter_by(id_tecnico=current_user.id_user).all()
+                    
+                    for sol in solicitudes_tecnico:
+                        # Unread messages notification
+                        unread_count = sol.mensajes.filter(Mensaje.leido == False, Mensaje.id_usuario_remitente != current_user.id_user).count()
+                        if unread_count > 0:
+                            notificaciones_tecnico.append({
+                                'id_solicitud': sol.id_solicitud,
+                                'tipo': 'mensaje',
+                                'titulo': f'Solicitud #{sol.id_solicitud}',
+                                'mensaje': f'Tienes {unread_count} nuevo(s) mensaje(s)',
+                                'link': url_for('tecnico.ver_solicitud', solicitud_id=sol.id_solicitud)
+                            })
+                        # Assigned notification if En proceso and 0 messages from technician
+                        elif estado_en_proceso and sol.id_estado == estado_en_proceso.id_estado:
+                            mensajes_tecnico = sol.mensajes.filter_by(id_usuario_remitente=current_user.id_user).count()
+                            if mensajes_tecnico == 0:
+                                notificaciones_tecnico.append({
+                                    'id_solicitud': sol.id_solicitud,
+                                    'tipo': 'asignacion',
+                                    'titulo': f'Nueva asignación #{sol.id_solicitud}',
+                                    'mensaje': 'Tienes una nueva solicitud asignada.',
+                                    'link': url_for('tecnico.ver_solicitud', solicitud_id=sol.id_solicitud)
+                                })
+            return dict(notificaciones_pendientes=notificaciones, notificaciones_tecnico=notificaciones_tecnico)
 
         @app.context_processor
         def inject_sectores():

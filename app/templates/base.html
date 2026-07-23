@@ -117,6 +117,38 @@
             </div>
             {% endif %}
 
+            <!-- Notificaciones (solo para tecnico) -->
+            {% if current_user.es_tecnico and notificaciones_tecnico %}
+            <div class="nav-notification me-3">
+                <div class="notification-bell" id="notifBellTecnico" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-badge">{{ notificaciones_tecnico|length }}</span>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end notification-dropdown">
+                    <li class="dropdown-header">
+                        <i class="bi bi-bell me-2"></i>Notificaciones
+                    </li>
+                    {% for notif in notificaciones_tecnico %}
+                    <li>
+                        <a class="dropdown-item notification-item" href="{{ notif.link }}">
+                            <div class="notification-icon">
+                                {% if notif.tipo == 'mensaje' %}
+                                <i class="bi bi-chat-dots-fill"></i>
+                                {% else %}
+                                <i class="bi bi-clipboard2-pulse-fill"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="notif-title">{{ notif.titulo }}</div>
+                                <div class="notif-body">{{ notif.mensaje }}</div>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
             <!-- Theme Toggle -->
             <button id="themeToggle" title="Cambiar tema" onclick="toggleTheme()">
                 <i class="bi bi-moon-stars-fill" id="themeIcon"></i>

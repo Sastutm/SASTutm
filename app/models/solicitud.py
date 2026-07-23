@@ -49,6 +49,13 @@ class Solicitud(db.Model):
     @property
     def mensajes_no_leidos(self):
         """Retorna el total de mensajes no leídos en esta solicitud."""
+        from flask_login import current_user
+        from app.models.mensaje import Mensaje
+        if current_user.is_authenticated:
+            return self.mensajes.filter(
+                Mensaje.leido == False,
+                Mensaje.id_usuario_remitente != current_user.id_user
+            ).count()
         return self.mensajes.filter_by(leido=False).count()
 
     def __repr__(self):

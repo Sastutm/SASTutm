@@ -24,7 +24,7 @@
 
     {# ===== STATS ===== #}
     {% set total      = solicitudes | length %}
-    {% set en_proceso = solicitudes | selectattr('estado.nombre_estado', 'equalto', 'En Proceso') | list | length %}
+    {% set en_proceso = solicitudes | selectattr('estado.nombre_estado', 'equalto', 'En proceso') | list | length %}
     {% set resueltas  = solicitudes | selectattr('estado.nombre_estado', 'equalto', 'Resuelto')  | list | length %}
 
     <div class="row g-3 mb-4">
@@ -71,10 +71,9 @@
     <div class="d-flex flex-column gap-3">
         {% for sol in solicitudes %}
 
-        {# Determine badge class #}
         {% set estado_css = {
             'Pendiente':  'status-pendiente',
-            'En Proceso': 'status-en-proceso',
+            'En proceso': 'status-en-proceso',
             'Resuelto':   'status-resuelto',
             'Cancelado':  'status-cancelado'
         } %}
@@ -96,7 +95,7 @@
                             <span class="fw-700" style="color:var(--text-primary);font-size:0.95rem;">
                                 #{{ sol.id_solicitud }}
                             </span>
-                            <span class="badge-type">{{ sol.tipo_soporte }}</span>
+                            <span class="badge-type">{{ sol.tipo_soporte.nombre_soporte }}</span>
                             <span class="badge-status {{ estado_css.get(sol.estado.nombre_estado, 'status-pendiente') }}">
                                 {{ sol.estado.nombre_estado }}
                             </span>
