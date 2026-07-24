@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import datetime
+from app.utils import obtener_hora_ecuador
 
 
 class Reporte(db.Model):
@@ -12,7 +12,7 @@ class Reporte(db.Model):
     recomendaciones = db.Column(db.Text, nullable=True)
     imagen_evidencia_1 = db.Column(db.String(255), nullable=False)  # Obligatorio: cómo recibió
     imagen_evidencia_2 = db.Column(db.String(255), nullable=False)  # Obligatorio: cómo entregó
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_creacion = db.Column(db.DateTime, default=obtener_hora_ecuador)
 
     def __repr__(self):
         return f'<Reporte {self.id_reporte} para solicitud {self.id_solicitud}>'

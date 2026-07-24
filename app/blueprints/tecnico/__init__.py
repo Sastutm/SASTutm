@@ -109,6 +109,23 @@ def descargar_pdf(solicitud_id):
     )
 
 
+@tecnico_bp.route('/solicitud/<int:solicitud_id>/ticket_pdf')
+@login_required
+@tecnico_required
+def descargar_ticket_pdf(solicitud_id):
+    solicitud = Solicitud.query.get_or_404(solicitud_id)
+    if solicitud.id_tecnico != current_user.id_user:
+        abort(403)
+        
+    pdf_buffer = generar_pdf_solicitud(solicitud, incluir_anexos_firmas=False)
+    return send_file(
+        pdf_buffer,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=f'Ticket_Solicitud_{solicitud.id_solicitud}.pdf'
+    )
+
+
 @tecnico_bp.route('/solicitud/<int:solicitud_id>/informe', methods=['GET', 'POST'])
 @login_required
 @tecnico_required

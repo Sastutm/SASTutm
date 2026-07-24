@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import datetime
+from app.utils import obtener_hora_ecuador
 
 
 class EstadoSolicitud(db.Model):
@@ -34,7 +34,7 @@ class Solicitud(db.Model):
     fecha_atencion = db.Column(db.Date, nullable=False)
     horario_solicitado = db.Column(db.String(50), nullable=False)
     recursos_adicionales = db.Column(db.Text)
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_creacion = db.Column(db.DateTime, default=obtener_hora_ecuador)
 
     id_cliente = db.Column(db.Integer, db.ForeignKey('user.id_user'), nullable=False)
     id_tecnico = db.Column(db.Integer, db.ForeignKey('user.id_user'), nullable=True)

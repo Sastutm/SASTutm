@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models import Solicitud, EstadoSolicitud, TipoSoporte, Mensaje, CalificacionTecnico, User, Rol
-from app.utils import save_file, allowed_file
+from app.utils import save_file, allowed_file, obtener_hora_ecuador
 from app import email_service
 from app.pdf_generator import generar_pdf_solicitud, generar_pdf_cliente
 from functools import wraps
@@ -68,7 +68,7 @@ def nueva_solicitud():
             flash('Formato de fecha inválido.', 'danger')
             return render_template('solicitante/nueva_solicitud.html', tipos=tipos)
 
-        if fecha_atencion < datetime.utcnow().date():
+        if fecha_atencion < obtener_hora_ecuador().date():
             flash('La fecha de atención no puede ser en el pasado.', 'danger')
             return render_template('solicitante/nueva_solicitud.html', tipos=tipos)
 

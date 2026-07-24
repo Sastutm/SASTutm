@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import datetime
+from app.utils import obtener_hora_ecuador
 
 
 class CalificacionTecnico(db.Model):
@@ -10,7 +10,7 @@ class CalificacionTecnico(db.Model):
     id_cliente = db.Column(db.Integer, db.ForeignKey('user.id_user'), nullable=False)
     puntuacion = db.Column(db.Integer, nullable=False)  # 1 a 5 estrellas
     comentario = db.Column(db.Text, nullable=True)
-    fecha_calificacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_calificacion = db.Column(db.DateTime, default=obtener_hora_ecuador)
 
     def __repr__(self):
         return f'<Calificacion {self.puntuacion}★ para solicitud {self.id_solicitud}>'

@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import datetime
+from app.utils import obtener_hora_ecuador
 
 
 class Mensaje(db.Model):
@@ -10,7 +10,7 @@ class Mensaje(db.Model):
     id_usuario_remitente = db.Column(db.Integer, db.ForeignKey('user.id_user'), nullable=False)
     contenido = db.Column(db.Text, nullable=False)
     archivo_adjunto = db.Column(db.String(255), nullable=True)
-    fecha_envio = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_envio = db.Column(db.DateTime, default=obtener_hora_ecuador)
     leido = db.Column(db.Boolean, default=False)
     canal = db.Column(db.String(20), default='publico', nullable=False)
     # canal: 'publico' = cliente<->tecnico | 'interno' = admin<->tecnico

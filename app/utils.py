@@ -39,3 +39,8 @@ def format_date(value, fmt='%d/%m/%Y'):
     if value is None:
         return ''
     return value.strftime(fmt)
+
+def obtener_hora_ecuador():
+    """Retorna la fecha y hora actual en la zona horaria de Ecuador (UTC-5)."""
+    from datetime import datetime, timedelta
+    return datetime.utcnow() - timedelta(hours=5)
