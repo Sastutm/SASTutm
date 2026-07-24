@@ -196,3 +196,32 @@ def reset_password(token):
         return redirect(url_for('auth.login'))
 
     return render_template('auth/reset_password.html', token=token)
+
+
+@auth_bp.route('/cambiar-contrasena', methods=['GET', 'POST'])
+@login_required
+def cambiar_contrasena():
+    if request.method == 'POST':
+        actual = request.form.get('contrasena_actual', '')
+        nueva = request.form.get('nueva_contrasena', '')
+        confirmar = request.form.get('confirmar_contrasena', '')
+
+        if not current_user.check_password(actual):
+            flash('La contraseña actual es incorrecta.', 'danger')
+            return render_template('auth/cambiar_contrasena.html')
+
+        if len(nueva) < 6:
+            flash('La nueva contraseña debe tener al menos 6 caracteres.', 'danger')
+            return render_template('auth/cambiar_contrasena.html')
+
+        if nueva != confirmar:
+            flash('Las nuevas contraseñas no coinciden.', 'danger')
+            return render_template('auth/cambiar_contrasena.html')
+
+        current_user.set_password(nueva)
+        db.session.commit()
+        
+        flash('¡Contraseña cambiada exitosamente!', 'success')
+        return _redirect_by_role(current_user)
+
+    return render_template('auth/cambiar_contrasena.html')

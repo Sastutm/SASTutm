@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Cambiar Contraseña{% endblock %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height:70vh;">
+  <div class="glass-card" style="width:100%;max-width:440px;padding:40px 36px;">
+
+    <div class="text-center mb-4">
+      <div class="stat-icon green mx-auto mb-3" style="width:56px;height:56px;font-size:1.5rem;border-radius:16px;">
+        <i class="bi bi-key-fill"></i>
+      </div>
+      <h1 style="font-size:1.5rem;font-weight:800;color:var(--text-primary);">Cambiar contraseña</h1>
+      <p style="color:var(--text-muted);font-size:0.88rem;margin-top:6px;">
+        Ingresa tu contraseña actual y elige una nueva.
+      </p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.cambiar_contrasena') }}" id="changePassForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="form-group mb-3">
+        <label class="form-label" for="contrasena_actual">
+          <i class="bi bi-unlock-fill me-1"></i> Contraseña actual
+        </label>
+        <div style="position:relative;">
+          <input type="password" id="contrasena_actual" name="contrasena_actual"
+                 class="form-control" placeholder="Tu contraseña actual" required
+                 style="padding-right:44px;">
+          <button type="button" onclick="togglePass('contrasena_actual', this)"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                         background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;">
+            <i class="bi bi-eye-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label class="form-label" for="nueva_contrasena">
+          <i class="bi bi-lock-fill me-1"></i> Nueva contraseña
+        </label>
+        <div style="position:relative;">
+          <input type="password" id="nueva_contrasena" name="nueva_contrasena"
+                 class="form-control" placeholder="Mínimo 6 caracteres" required minlength="6"
+                 style="padding-right:44px;">
+          <button type="button" onclick="togglePass('nueva_contrasena', this)"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                         background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;">
+            <i class="bi bi-eye-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group mb-4">
+        <label class="form-label" for="confirmar_contrasena">
+          <i class="bi bi-lock-fill me-1"></i> Confirmar nueva contraseña
+        </label>
+        <div style="position:relative;">
+          <input type="password" id="confirmar_contrasena" name="confirmar_contrasena"
+                 class="form-control" placeholder="Repite tu nueva contraseña" required
+                 style="padding-right:44px;">
+          <button type="button" onclick="togglePass('confirmar_contrasena', this)"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                         background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;">
+            <i class="bi bi-eye-fill"></i>
+          </button>
+        </div>
+        <div id="matchError" style="color:#fca5a5;font-size:0.78rem;margin-top:4px;display:none;">
+          <i class="bi bi-exclamation-circle me-1"></i>Las contraseñas no coinciden.
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary-custom w-100 mb-3">
+        <i class="bi bi-check-circle-fill me-2"></i>Actualizar Contraseña
+      </button>
+
+      <a href="javascript:history.back()" class="btn-outline-custom w-100 d-block text-center text-decoration-none">
+        Cancelar
+      </a>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePass(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye-fill');
+        icon.classList.add('bi-eye-slash-fill');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-slash-fill');
+        icon.classList.add('bi-eye-fill');
+    }
+}
+
+// Validación de coincidencia antes de enviar
+document.getElementById('changePassForm').addEventListener('submit', function(e) {
+    const p1 = document.getElementById('nueva_contrasena').value;
+    const p2 = document.getElementById('confirmar_contrasena').value;
+    if (p1 !== p2) {
+        e.preventDefault();
+        document.getElementById('matchError').style.display = 'block';
+    } else {
+        document.getElementById('matchError').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
