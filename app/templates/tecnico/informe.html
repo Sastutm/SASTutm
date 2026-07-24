@@ -99,13 +99,13 @@
                         <label class="form-label" for="imagen_evidencia_1">
                             Evidencia 1 &mdash; Cómo recibió el equipo
                         </label>
-                        <div class="file-upload-area" id="uploadArea1">
+                        <div class="file-upload-area" id="uploadArea1" style="position:relative;">
                             <input type="file"
                                    name="imagen_evidencia_1"
                                    id="imagen_evidencia_1"
                                    accept="image/*"
                                    required
-                                   onchange="handleFileSelect(this, 'preview1', 'uploadArea1', 'label1')">
+                                   onchange="handleFileSelect(this, 'preview1', 'uploadArea1', 'label1', 'changeHint1')">
                             <div id="label1">
                                 <div class="file-upload-icon"><i class="bi bi-camera-fill"></i></div>
                                 <div class="file-upload-text">Haz clic o arrastra una imagen aquí</div>
@@ -115,7 +115,11 @@
                                  class="file-preview"
                                  src="#"
                                  alt="Vista previa imagen 1"
-                                 style="display:none;">
+                                 style="display:none; width:100%;">
+                            <div id="changeHint1" 
+                                 style="display:none; margin-top:8px; font-size:0.85rem; color:var(--primary); font-weight:600; text-align:center;">
+                                <i class="bi bi-arrow-repeat me-1"></i>Haz clic de nuevo para cambiar la imagen
+                            </div>
                         </div>
                         <div id="error1"
                              style="color:#fca5a5;font-size:0.78rem;margin-top:6px;display:none;">
@@ -132,13 +136,13 @@
                         <label class="form-label" for="imagen_evidencia_2">
                             Evidencia 2 &mdash; Cómo entregó el equipo
                         </label>
-                        <div class="file-upload-area" id="uploadArea2">
+                        <div class="file-upload-area" id="uploadArea2" style="position:relative;">
                             <input type="file"
                                    name="imagen_evidencia_2"
                                    id="imagen_evidencia_2"
                                    accept="image/*"
                                    required
-                                   onchange="handleFileSelect(this, 'preview2', 'uploadArea2', 'label2')">
+                                   onchange="handleFileSelect(this, 'preview2', 'uploadArea2', 'label2', 'changeHint2')">
                             <div id="label2">
                                 <div class="file-upload-icon"><i class="bi bi-camera-fill"></i></div>
                                 <div class="file-upload-text">Haz clic o arrastra una imagen aquí</div>
@@ -148,7 +152,11 @@
                                  class="file-preview"
                                  src="#"
                                  alt="Vista previa imagen 2"
-                                 style="display:none;">
+                                 style="display:none; width:100%;">
+                            <div id="changeHint2" 
+                                 style="display:none; margin-top:8px; font-size:0.85rem; color:var(--primary); font-weight:600; text-align:center;">
+                                <i class="bi bi-arrow-repeat me-1"></i>Haz clic de nuevo para cambiar la imagen
+                            </div>
                         </div>
                         <div id="error2"
                              style="color:#fca5a5;font-size:0.78rem;margin-top:6px;display:none;">
@@ -208,11 +216,12 @@
 const img1Loaded = { ok: false };
 const img2Loaded = { ok: false };
 
-function handleFileSelect(input, previewId, areaId, labelId) {
+function handleFileSelect(input, previewId, areaId, labelId, hintId) {
     const file     = input.files[0];
     const preview  = document.getElementById(previewId);
     const area     = document.getElementById(areaId);
     const label    = document.getElementById(labelId);
+    const hint     = document.getElementById(hintId);
     const isImg1   = (previewId === 'preview1');
     const errorEl  = document.getElementById(isImg1 ? 'error1' : 'error2');
     const loader   = isImg1 ? img1Loaded : img2Loaded;
@@ -220,6 +229,7 @@ function handleFileSelect(input, previewId, areaId, labelId) {
     if (!file) {
         loader.ok = false;
         preview.style.display = 'none';
+        if (hint) hint.style.display = 'none';
         preview.src = '#';
         area.classList.remove('has-file');
         label.style.display = 'block';
@@ -253,6 +263,7 @@ function handleFileSelect(input, previewId, areaId, labelId) {
     reader.onload = (e) => {
         preview.src = e.target.result;
         preview.style.display = 'block';
+        if (hint) hint.style.display = 'block';
         label.style.display = 'none';
         area.classList.add('has-file');
         loader.ok = true;
