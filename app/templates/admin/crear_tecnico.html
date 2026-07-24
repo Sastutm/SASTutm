@@ -96,16 +96,36 @@
           <div class="col-12 col-md-6">
             <div class="form-group">
               <label class="form-label" for="sector">
-                <i class="bi bi-geo-alt me-1"></i> Sector / Ubicación
+                <i class="bi bi-geo-alt me-1"></i> Sector / Ubicación *
               </label>
-              <select id="sector" name="sector" class="form-select" required>
+              <select id="sector" name="sector" class="form-select" required onchange="toggleSectorOtro(this.value)">
                 <option value="" disabled selected>Selecciona un sector...</option>
                 {% for s in sectores %}
                 <option value="{{ s.nombre_sector }}">{{ s.nombre_sector }}</option>
                 {% endfor %}
+                <option value="__otro__">Otro...</option>
               </select>
+              <input type="text" id="sectorOtro" name="sector_otro"
+                     class="form-control mt-2" placeholder="Escribe el sector..."
+                     style="display:none;" disabled>
             </div>
           </div>
+
+          <!-- Script para manejar la opción 'Otro' -->
+          <script>
+            function toggleSectorOtro(value) {
+                const otroInput = document.getElementById('sectorOtro');
+                if (value === '__otro__') {
+                    otroInput.style.display = 'block';
+                    otroInput.disabled = false;
+                    otroInput.focus();
+                } else {
+                    otroInput.style.display = 'none';
+                    otroInput.disabled = true;
+                    otroInput.value = '';
+                }
+            }
+          </script>
 
         </div>
       </div>

@@ -61,47 +61,48 @@
 
             <!-- Sector -->
             <div class="mb-3 mt-1">
-                <label class="form-label d-block mb-2">
+                <label class="form-label d-block mb-2" for="sector">
                     <i class="bi bi-geo-alt-fill me-1"></i>Sector / Barrio *
                 </label>
-                <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);
-                            border-radius:var(--radius-sm);padding:16px 18px;max-height:260px;
-                            overflow-y:auto;" id="sectorContainer">
-                    {% set sector_guardado = form_data.get('sector', '') %}
+                {% set sector_guardado = form_data.get('sector', '') %}
+                {% set es_otro = sector_guardado and sector_guardado not in sectores_lista|map(attribute='nombre_sector')|list %}
+                
+                <select id="sector" name="sector" class="form-select" required onchange="toggleSectorOtro(this.value)">
+                    <option value="" disabled {% if not sector_guardado %}selected{% endif %}>Selecciona un sector...</option>
                     {% for s in sectores_lista %}
-                    <div class="form-check mb-1">
-                        <input class="form-check-input" type="radio"
-                               name="sector" id="sector_{{ loop.index }}"
-                               value="{{ s.nombre_sector }}"
-                               onchange="document.getElementById('sectorOtro').disabled=true;document.getElementById('sectorOtro').value='';"
-                               {% if sector_guardado == s.nombre_sector %}checked{% endif %}>
-                        <label class="form-check-label" for="sector_{{ loop.index }}"
-                               style="color:var(--text-secondary);font-size:0.88rem;">
-                            {{ s.nombre_sector }}
-                        </label>
-                    </div>
+                    <option value="{{ s.nombre_sector }}" {% if sector_guardado == s.nombre_sector %}selected{% endif %}>
+                        {{ s.nombre_sector }}
+                    </option>
                     {% endfor %}
-                    <!-- Otro -->
-                    <div class="form-check mb-1 mt-2">
-                        <input class="form-check-input" type="radio"
-                               name="sector" id="sectorOtroRadio" value="__otro__"
-                               onchange="document.getElementById('sectorOtro').disabled=false;document.getElementById('sectorOtro').focus();"
-                               {% if sector_guardado and sector_guardado not in sectores_lista|map(attribute='nombre_sector')|list %}checked{% endif %}>
-                        <label class="form-check-label" for="sectorOtroRadio"
-                               style="color:var(--text-secondary);font-size:0.88rem;">
-                            Otro:
-                        </label>
-                    </div>
-                    <input type="text" id="sectorOtro" name="sector_otro"
-                           class="form-control mt-1" placeholder="Escribe tu sector..."
-                           style="font-size:0.85rem;"
-                           disabled
-                           value="{{ sector_guardado if sector_guardado and sector_guardado not in sectores_lista|map(attribute='nombre_sector')|list else '' }}">
-                </div>
+                    <option value="__otro__" {% if es_otro %}selected{% endif %}>Otro...</option>
+                </select>
+
+                <input type="text" id="sectorOtro" name="sector_otro"
+                       class="form-control mt-2" placeholder="Escribe tu sector..."
+                       style="font-size:0.85rem; {% if not es_otro %}display:none;{% endif %}"
+                       {% if not es_otro %}disabled{% endif %}
+                       value="{{ sector_guardado if es_otro else '' }}">
+                       
                 <div id="sectorError" style="color:#fca5a5;font-size:0.78rem;margin-top:5px;display:none;">
                     <i class="bi bi-exclamation-circle me-1"></i>Selecciona o escribe tu sector.
                 </div>
             </div>
+
+            <!-- Script para manejar la opción 'Otro' -->
+            <script>
+              function toggleSectorOtro(value) {
+                  const otroInput = document.getElementById('sectorOtro');
+                  if (value === '__otro__') {
+                      otroInput.style.display = 'block';
+                      otroInput.disabled = false;
+                      otroInput.focus();
+                  } else {
+                      otroInput.style.display = 'none';
+                      otroInput.disabled = true;
+                      otroInput.value = '';
+                  }
+              }
+            </script>
 
 
             <!-- Credenciales -->

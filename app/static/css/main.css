@@ -16,6 +16,7 @@
 /* Modo OSCURO (predeterminado) — inspirado en UTM */
 :root,
 [data-theme="dark"] {
+    color-scheme: dark;
     /* Brand — Verde UTM + Dorado */
     --primary:       #1a8c4e;   /* verde UTM */
     --primary-light: #2dbd6e;
@@ -78,6 +79,7 @@
 
 /* ===== MODO CLARO ===== */
 [data-theme="light"] {
+    color-scheme: light;
     --primary:       #1a8c4e;
     --primary-light: #145f36;
     --primary-dark:  #0e4226;
@@ -778,6 +780,12 @@ main, nav, footer { position: relative; z-index: 1; }
 .form-control::placeholder { color: var(--text-muted); }
 
 textarea.form-control { min-height: 100px; resize: vertical; }
+
+/* Explicit fix for date picker calendar icon in dark mode */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(1.5);
+    cursor: pointer;
+}
 
 .form-select option {
     background: var(--bg-elevated);

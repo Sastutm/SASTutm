@@ -162,6 +162,22 @@ def ver_solicitud(solicitud_id):
     solicitud = Solicitud.query.get_or_404(solicitud_id)
     return render_template('admin/ver_solicitud.html', solicitud=solicitud)
 
+@admin_bp.route('/solicitudes/<int:solicitud_id>/cancelar', methods=['POST'])
+@login_required
+@admin_required
+def cancelar_solicitud(solicitud_id):
+    solicitud = Solicitud.query.get_or_404(solicitud_id)
+    
+    if solicitud.estado.nombre_estado not in ['Pendiente', 'En proceso']:
+        flash('Solo se pueden cancelar solicitudes activas (Pendiente o En proceso).', 'warning')
+        return redirect(url_for('admin.ver_solicitud', solicitud_id=solicitud_id))
+
+    estado_cancelado = EstadoSolicitud.query.filter_by(nombre_estado='Cancelado').first()
+    solicitud.id_estado = estado_cancelado.id_estado
+    db.session.commit()
+
+    flash(f'Solicitud #{solicitud_id} cancelada por administración.', 'info')
+    return redirect(url_for('admin.ver_solicitud', solicitud_id=solicitud_id))
 
 @admin_bp.route('/solicitudes/<int:solicitud_id>/chat')
 @login_required
@@ -250,27 +266,31 @@ def crear_tecnico():
         correo = request.form.get('correo', '').strip().lower()
         password = request.form.get('contrasena', '')
         sector = request.form.get('sector', '').strip()
+        if sector == '__otro__':
+            sector = request.form.get('sector_otro', '').strip()
+
         carrera = request.form.get('carrera', '').strip()
         semestre_str = request.form.get('semestre', '')
 
         if not all([ncedula, nombres, apellidos, fecha_nacimiento_str,
                     numero_telefono, correo, password, sector]):
             flash('Todos los campos son obligatorios.', 'danger')
-            return render_template('admin/crear_tecnico.html')
+            return render_template('admin/crear_tecnico.html', sectores=Sector.query.order_by(Sector.nombre_sector.asc()).all())
 
         if User.query.filter_by(correo=correo).first():
             flash('Ya existe un usuario con ese correo.', 'danger')
-            return render_template('admin/crear_tecnico.html')
+            return render_template('admin/crear_tecnico.html', sectores=Sector.query.order_by(Sector.nombre_sector.asc()).all())
+
 
         if User.query.filter_by(ncedula=ncedula).first():
             flash('Ya existe un usuario con esa cédula.', 'danger')
-            return render_template('admin/crear_tecnico.html')
+            return render_template('admin/crear_tecnico.html', sectores=Sector.query.order_by(Sector.nombre_sector.asc()).all())
 
         try:
             fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d').date()
         except ValueError:
-            flash('Formato de fecha inválido.', 'danger')
-            return render_template('admin/crear_tecnico.html')
+            flash('Formato de fecha de nacimiento inválido.', 'danger')
+            return render_template('admin/crear_tecnico.html', sectores=Sector.query.order_by(Sector.nombre_sector.asc()).all())
 
         rol_tecnico = Rol.query.filter_by(nombre_rol='técnico').first()
 

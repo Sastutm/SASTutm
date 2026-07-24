@@ -1,6 +1,41 @@
 {% extends 'base.html' %}
 {% block title %}Mi Panel{% endblock %}
 
+{% block extra_css %}
+<!-- Intro.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css" integrity="sha512-4ZzQ+1zD+V8V78+T15/B11Xy3o1/Bv5U7T+V3WzH7W9+jVz9sU2hF6Q0h5V5Z2Y7V8H1S8T1zH9z4Y1G3U8==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- Tema oscuro opcional para intro.js -->
+<style>
+    /* Ajustes básicos para que Intro.js haga match con el estilo */
+    .introjs-tooltip {
+        background-color: var(--card-bg) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--text-primary) !important;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    }
+    .introjs-arrow.top { border-bottom-color: var(--card-bg) !important; }
+    .introjs-arrow.bottom { border-top-color: var(--card-bg) !important; }
+    .introjs-arrow.left { border-right-color: var(--card-bg) !important; }
+    .introjs-arrow.right { border-left-color: var(--card-bg) !important; }
+    .introjs-button {
+        background-color: var(--primary) !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        border: none !important;
+        text-shadow: none !important;
+        box-shadow: none !important;
+        padding: 6px 14px !important;
+    }
+    .introjs-button:hover {
+        background-color: var(--primary-glow) !important;
+    }
+    .introjs-disabled { color: var(--text-muted) !important; background-color: var(--glass-bg) !important; cursor: not-allowed; }
+    .introjs-bullets ul li a { background: var(--text-muted); }
+    .introjs-bullets ul li a.active { background: var(--primary); }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid px-4 py-4">
 
@@ -86,7 +121,7 @@
     </div>
 
     <!-- Lista de solicitudes -->
-    <div class="section-card">
+    <div class="section-card" id="listaSolicitudes">
         <div class="section-card-header">
             <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-list-ul" style="color:var(--primary-light);font-size:1.1rem;"></i>
@@ -179,6 +214,8 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Intro.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js" integrity="sha512-4Uq/R3y/gQyF3R5F1kR+B88aQo04+o3/725XU4hD1Zq3z57P5l5+ZqW0H8rW7/zW7+V3H4Y5hW0z6T3Y0Z1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 const CSS_ACTIVE = 'box-shadow:0 0 0 2px var(--primary),0 4px 20px var(--primary-glow);border-color:var(--primary)!important;';
 let filtroActivo = '';
@@ -215,6 +252,48 @@ function filtrarSolicitudes(estado) {
 document.addEventListener('DOMContentLoaded', () => {
     const active = document.getElementById('btn-all');
     if (active) active.style.cssText += CSS_ACTIVE;
+    
+    // Iniciar Tour si es la primera vez
+    if (!localStorage.getItem('sast_tour_v1_visto')) {
+        // Pequeño delay para que la interfaz cargue completamente
+        setTimeout(() => {
+            introJs().setOptions({
+                nextLabel: 'Siguiente &rarr;',
+                prevLabel: '&larr; Atrás',
+                doneLabel: '¡Entendido!',
+                skipLabel: 'Saltar',
+                showStepNumbers: false,
+                steps: [
+                    {
+                        title: '¡Bienvenido a SAST!',
+                        intro: 'Hagamos un recorrido rápido para que conozcas tu panel de control.'
+                    },
+                    {
+                        element: document.querySelector('#btnNuevaSolicitud'),
+                        title: 'Crear Solicitud',
+                        intro: 'Haz clic aquí cada vez que necesites reportar un problema técnico. ¡Un experto te atenderá!',
+                        position: 'left'
+                    },
+                    {
+                        element: document.querySelector('#statsRow'),
+                        title: 'Tus Estadísticas',
+                        intro: 'Aquí podrás ver el resumen de tus solicitudes. Puedes hacer clic en cualquiera de estas tarjetas para filtrar tu lista rápidamente.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: document.querySelector('#listaSolicitudes'),
+                        title: 'Historial',
+                        intro: 'Aquí aparecerán todas tus solicitudes. Podrás ver su estado en tiempo real, abrir un chat con el técnico asignado, o calificar el servicio cuando termine.',
+                        position: 'top'
+                    }
+                ]
+            }).oncomplete(function() {
+                localStorage.setItem('sast_tour_v1_visto', 'true');
+            }).onexit(function() {
+                localStorage.setItem('sast_tour_v1_visto', 'true');
+            }).start();
+        }, 800);
+    }
 });
 </script>
 {% endblock %}

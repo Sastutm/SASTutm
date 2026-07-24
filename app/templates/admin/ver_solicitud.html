@@ -189,9 +189,17 @@
       <i class="bi bi-arrow-left"></i> Volver a Solicitudes
     </a>
     {% if solicitud.estado.nombre_estado in ['Pendiente', 'En proceso'] %}
-    <a href="{{ url_for('admin.asignar_tecnico', solicitud_id=solicitud.id_solicitud) }}" class="btn-primary-custom">
-      <i class="bi bi-person-check-fill"></i> Asignar / Reasignar Técnico
-    </a>
+    <div class="d-flex gap-2">
+      <form action="{{ url_for('admin.cancelar_solicitud', solicitud_id=solicitud.id_solicitud) }}" method="POST" onsubmit="return confirm('¿Estás seguro de cancelar esta solicitud?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-outline-custom" style="border-color:var(--danger);color:var(--danger);">
+          <i class="bi bi-x-circle-fill"></i> Cancelar Solicitud
+        </button>
+      </form>
+      <a href="{{ url_for('admin.asignar_tecnico', solicitud_id=solicitud.id_solicitud) }}" class="btn-primary-custom">
+        <i class="bi bi-person-check-fill"></i> Asignar / Reasignar Técnico
+      </a>
+    </div>
     {% elif solicitud.estado.nombre_estado == 'Resuelto' %}
     <a href="{{ url_for('admin.descargar_pdf', solicitud_id=solicitud.id_solicitud) }}" class="btn-primary-custom">
       <i class="bi bi-file-earmark-pdf-fill"></i> Descargar Informe PDF
