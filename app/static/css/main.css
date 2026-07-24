@@ -215,8 +215,8 @@
 
 /* ── Botón toggle de tema ── */
 #themeToggle {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: rgba(26,140,78,0.12);
     border: 1px solid rgba(26,140,78,0.2);
@@ -225,7 +225,7 @@
     justify-content: center;
     cursor: pointer;
     color: var(--primary-light);
-    font-size: 1.05rem;
+    font-size: 1rem;
     transition: var(--transition);
     flex-shrink: 0;
 }
@@ -777,13 +777,24 @@ main, nav, footer { position: relative; z-index: 1; }
     outline: none;
 }
 
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    color-scheme: dark;
+}
+
+/* Ocultar el ojo nativo de contraseñas (Edge/IE) porque ya usamos uno propio */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
 .form-control::placeholder { color: var(--text-muted); }
 
 textarea.form-control { min-height: 100px; resize: vertical; }
 
-/* Explicit fix for date picker calendar icon in dark mode */
+/* Explicit fix for date picker calendar icon in dark mode (if color-scheme fails) */
 [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1) brightness(1.5);
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%238b949e" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
     cursor: pointer;
 }
 
